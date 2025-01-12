@@ -12,9 +12,35 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       min-height: 100vh;
       background-color: #f4f4f9;
+    }
+    header {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 10px 0;
+    }
+    nav button {
+      padding: 10px 15px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    nav button.active {
+      background-color: #28a745;
     }
     .bit-row {
       display: flex;
@@ -40,15 +66,6 @@
       font-size: 20px;
       font-weight: bold;
     }
-    .quiz-settings {
-      margin-top: 30px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    .quiz-settings label {
-      margin: 5px 0;
-    }
     .quiz-question {
       margin-top: 20px;
       font-size: 20px;
@@ -61,19 +78,22 @@
   </style>
 </head>
 <body>
-  <h1>Binary to Decimal Practice</h1>
+  <header>
+    <h1>Binary to Decimal Practice</h1>
+  </header>
+
+  <nav>
+    <button id="calculatorMode" class="active">Calculator</button>
+    <button id="quizMode1">Quiz: 0-15</button>
+    <button id="quizMode2">Quiz: 16-240</button>
+    <button id="quizMode3">Quiz: 0-255</button>
+  </nav>
 
   <div class="bit-row" id="bitRow">
     <!-- Buttons for bits -->
   </div>
 
   <div class="output" id="output">Decimal Value: 0</div>
-
-  <div class="quiz-settings">
-    <label><input type="checkbox" id="quizMode1"> Mode 1: Numbers 0-15</label>
-    <label><input type="checkbox" id="quizMode2"> Mode 2: Numbers 16-255</label>
-    <label><input type="checkbox" id="quizMode3"> Mode 3: Numbers 0-255</label>
-  </div>
 
   <div class="quiz-question" id="quizQuestion"></div>
   <div class="quiz-feedback" id="quizFeedback"></div>
@@ -83,17 +103,27 @@
     const output = document.getElementById('output');
     const quizQuestion = document.getElementById('quizQuestion');
     const quizFeedback = document.getElementById('quizFeedback');
-    const modes = {
-      mode1: document.getElementById('quizMode1'),
-      mode2: document.getElementById('quizMode2'),
-      mode3: document.getElementById('quizMode3')
+    const buttons = {
+      calculatorMode: document.getElementById('calculatorMode'),
+      quizMode1: document.getElementById('quizMode1'),
+      quizMode2: document.getElementById('quizMode2'),
+      quizMode3: document.getElementById('quizMode3')
     };
 
     let bits = Array(8).fill(0);
+    let currentMode = 'calculator';
+    let currentQuizValue = null;
 
     function updateOutput() {
       const decimalValue = parseInt(bits.join(''), 2);
       output.textContent = `Decimal Value: ${decimalValue}`;
+      if (currentMode.startsWith('quiz') && decimalValue === currentQuizValue) {
+        quizFeedback.textContent = 'Correct!';
+        quizFeedback.style.color = '#28a745';
+        startQuiz(currentMode);
+      } else if (currentMode.startsWith('quiz')) {
+        quizFeedback.textContent = '';
+      }
     }
 
     function toggleBit(index) {
@@ -114,30 +144,34 @@
     }
 
     function getRandomNumber(mode) {
-      if (mode === 'mode1') return Math.floor(Math.random() * 16);
-      if (mode === 'mode2') return 16 + Math.floor(Math.random() * (240));
+      if (mode === 'quizMode1') return Math.floor(Math.random() * 16);
+      if (mode === 'quizMode2') return 16 + Math.floor(Math.random() * 16);
       return Math.floor(Math.random() * 256);
     }
 
-    function startQuiz() {
+    function startQuiz(mode) {
       quizFeedback.textContent = '';
-      let activeMode = null;
-
-      if (modes.mode1.checked) activeMode = 'mode1';
-      else if (modes.mode2.checked) activeMode = 'mode2';
-      else if (modes.mode3.checked) activeMode = 'mode3';
-
-      if (!activeMode) {
-        quizFeedback.textContent = 'Please select a mode to start the quiz.';
-        return;
-      }
-
-      const decimalValue = getRandomNumber(activeMode);
-      quizQuestion.textContent = `Convert ${decimalValue} to binary.`;
+      currentQuizValue = getRandomNumber(mode);
+      quizQuestion.textContent = `Convert ${currentQuizValue} to binary.`;
     }
 
-    document.querySelectorAll('.quiz-settings input').forEach(input => {
-      input.addEventListener('change', startQuiz);
+    function setMode(mode) {
+      currentMode = mode;
+      Object.values(buttons).forEach(button => button.classList.remove('active'));
+      buttons[mode].classList.add('active');
+
+      if (mode === 'calculator') {
+        quizQuestion.textContent = '';
+        quizFeedback.textContent = '';
+        output.style.display = 'block';
+      } else {
+        output.style.display = 'none';
+        startQuiz(mode);
+      }
+    }
+
+    Object.entries(buttons).forEach(([mode, button]) => {
+      button.addEventListener('click', () => setMode(mode));
     });
 
     renderBits();
