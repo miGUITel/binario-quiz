@@ -9,6 +9,7 @@ body {
     min-height: 100vh;
     background-color: #f4f4f9;
   }
+  
   header {
     background-color: #007bff;
     color: white;
@@ -17,12 +18,14 @@ body {
     text-align: center;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
   }
+  
   nav {
     display: flex;
     justify-content: center;
     gap: 15px;
     margin: 10px 0;
   }
+  
   nav button {
     padding: 10px 15px;
     font-size: 16px;
@@ -32,16 +35,23 @@ body {
     color: white;
     cursor: pointer;
   }
+  
   nav button.active {
     background-color: #28a745;
   }
+  
   .bit-row {
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
+    justify-content: center;
     margin: 20px 0;
+    gap: 5px;
+    padding: 10px;
   }
+  
   .bit {
-    width: 50px;
+    width: calc(12.5% - 10px); /* Ensures buttons fit in a row */
+    max-width: 50px;
     height: 50px;
     margin: 5px;
     font-size: 18px;
@@ -51,20 +61,33 @@ body {
     border-radius: 5px;
     cursor: pointer;
   }
+  
   .bit.active {
     background-color: #28a745;
   }
+  
   .output {
     margin-top: 20px;
     font-size: 20px;
     font-weight: bold;
   }
+  
   .quiz-question {
     margin-top: 20px;
     font-size: 20px;
   }
+  
   .quiz-feedback {
     margin-top: 10px;
     font-size: 16px;
     color: #dc3545;
   }
+  
+  @media (max-width: 600px) {
+    .bit {
+      width: 40px;
+      height: 40px;
+      font-size: 14px;
+    }
+  }
+  
