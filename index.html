@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Binary to Decimal Practice</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: #f4f4f9;
+    }
+    .bit-row {
+      display: flex;
+      flex-wrap: nowrap;
+      margin: 20px 0;
+    }
+    .bit {
+      width: 50px;
+      height: 50px;
+      margin: 5px;
+      font-size: 18px;
+      color: white;
+      background-color: #007bff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .bit.active {
+      background-color: #28a745;
+    }
+    .output {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .quiz-settings {
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .quiz-settings label {
+      margin: 5px 0;
+    }
+    .quiz-question {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+    .quiz-feedback {
+      margin-top: 10px;
+      font-size: 16px;
+      color: #dc3545;
+    }
+  </style>
+</head>
+<body>
+  <h1>Binary to Decimal Practice</h1>
+
+  <div class="bit-row" id="bitRow">
+    <!-- Buttons for bits -->
+  </div>
+
+  <div class="output" id="output">Decimal Value: 0</div>
+
+  <div class="quiz-settings">
+    <label><input type="checkbox" id="quizMode1"> Mode 1: Numbers 0-15</label>
+    <label><input type="checkbox" id="quizMode2"> Mode 2: Numbers 16-255</label>
+    <label><input type="checkbox" id="quizMode3"> Mode 3: Numbers 0-255</label>
+  </div>
+
+  <div class="quiz-question" id="quizQuestion"></div>
+  <div class="quiz-feedback" id="quizFeedback"></div>
+
+  <script>
+    const bitRow = document.getElementById('bitRow');
+    const output = document.getElementById('output');
+    const quizQuestion = document.getElementById('quizQuestion');
+    const quizFeedback = document.getElementById('quizFeedback');
+    const modes = {
+      mode1: document.getElementById('quizMode1'),
+      mode2: document.getElementById('quizMode2'),
+      mode3: document.getElementById('quizMode3')
+    };
+
+    let bits = Array(8).fill(0);
+
+    function updateOutput() {
+      const decimalValue = parseInt(bits.join(''), 2);
+      output.textContent = `Decimal Value: ${decimalValue}`;
+    }
+
+    function toggleBit(index) {
+      bits[index] = bits[index] === 0 ? 1 : 0;
+      renderBits();
+      updateOutput();
+    }
+
+    function renderBits() {
+      bitRow.innerHTML = '';
+      bits.forEach((bit, index) => {
+        const button = document.createElement('button');
+        button.textContent = bit;
+        button.className = `bit ${bit === 1 ? 'active' : ''}`;
+        button.addEventListener('click', () => toggleBit(index));
+        bitRow.appendChild(button);
+      });
+    }
+
+    function getRandomNumber(mode) {
+      if (mode === 'mode1') return Math.floor(Math.random() * 16);
+      if (mode === 'mode2') return 16 + Math.floor(Math.random() * (240));
+      return Math.floor(Math.random() * 256);
+    }
+
+    function startQuiz() {
+      quizFeedback.textContent = '';
+      let activeMode = null;
+
+      if (modes.mode1.checked) activeMode = 'mode1';
+      else if (modes.mode2.checked) activeMode = 'mode2';
+      else if (modes.mode3.checked) activeMode = 'mode3';
+
+      if (!activeMode) {
+        quizFeedback.textContent = 'Please select a mode to start the quiz.';
+        return;
+      }
+
+      const decimalValue = getRandomNumber(activeMode);
+      quizQuestion.textContent = `Convert ${decimalValue} to binary.`;
+    }
+
+    document.querySelectorAll('.quiz-settings input').forEach(input => {
+      input.addEventListener('change', startQuiz);
+    });
+
+    renderBits();
+    updateOutput();
+  </script>
+</body>
+</html>
